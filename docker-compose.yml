@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: licoreria_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  django:
+    build: 
+      context: ./backend
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/licoreria_db
+      - DJANGO_SECRET_KEY=dev-secret-key
+      - DJANGO_DEBUG=True
+      - PAYMENT_SERVICE_URL=http://node:3001
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  node:
+    build:
+      context: ./payment-service
+    command: npm run dev
+    volumes:
+      - ./payment-service:/app
+      - /app/node_modules
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - DJANGO_API_URL=http://django:8000/api
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
