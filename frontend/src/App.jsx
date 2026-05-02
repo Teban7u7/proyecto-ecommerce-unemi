@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { ShoppingBag, Plus, Minus, CreditCard, Wine, CheckCircle2 } from 'lucide-react';
+import { ShoppingBag, Plus, Minus, CreditCard, Wine, CheckCircle2, Star, Sparkles, ShieldCheck } from 'lucide-react';
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -9,10 +9,9 @@ function App() {
   const [checkingOut, setCheckingOut] = useState(false);
   const [orderResult, setOrderResult] = useState(null);
   const [error, setError] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState('linktopay'); // linktopay | checkout
+  const [paymentMethod, setPaymentMethod] = useState('linktopay');
   const [storeConfig, setStoreConfig] = useState(null);
 
-  // User form state
   const [user, setUser] = useState({
     name: 'Esteban',
     email: 'teban@test.com',
@@ -20,7 +19,6 @@ function App() {
   });
 
   useEffect(() => {
-    // Fetch products and config from Django
     Promise.all([
       axios.get('/api/products/'),
       axios.get('/api/store-config/')
@@ -32,7 +30,7 @@ function App() {
       })
       .catch(err => {
         console.error("Error fetching data", err);
-        setError("Error al cargar la tienda. Asegúrate de que el backend esté corriendo.");
+        setError("Error al cargar la tienda.");
         setLoading(false);
       });
   }, []);
@@ -60,7 +58,7 @@ function App() {
   };
 
   const subtotal = cart.reduce((acc, item) => acc + (parseFloat(item.price) * item.quantity), 0);
-  const iva = subtotal * 0.15; // Asumiendo IVA 15%
+  const iva = subtotal * 0.15;
   const total = subtotal + iva;
 
   const handleCheckout = async () => {
@@ -84,41 +82,19 @@ function App() {
       const response = await axios.post('/api/orders/', payload);
       setOrderResult({ ...response.data, method_used: paymentMethod });
       
-      // Trigger Nuvei Checkout if Checkout was selected
       if (paymentMethod === 'checkout' && response.data.nuvei_response?.reference) {
         const transactionId = response.data.nuvei_response.reference;
-        const creds = storeConfig?.active_credentials;
-        
-        if (!creds || !creds.app_key_client) {
-            alert("Falta el Client Key en la configuración de la tienda. Revísalo en el Admin.");
-            return;
-        }
-
-        // Initialize Nuvei Checkout SDK Modal
         const paymentCheckout = new window.PaymentCheckout.modal({
-          env_mode: storeConfig.environment.toLowerCase(), // 'stg' or 'prod'
-          onOpen: function () {
-            console.log("modal open");
-          },
-          onClose: function () {
-            console.log("modal closed");
-          },
+          env_mode: storeConfig.environment.toLowerCase(),
           onResponse: function(res) {
-            console.log("Nuvei Checkout Response:", res);
             if (res.transaction?.status === 'success') {
-              alert("Pago Exitoso!");
+              alert("¡Pago Exitoso!");
             }
           }
         });
-        
         paymentCheckout.open({ reference: transactionId });
-
-        window.addEventListener('popstate', function () {
-          paymentCheckout.close();
-        });
       }
-
-      setCart([]); // Clear cart
+      setCart([]);
     } catch (err) {
       console.error(err);
       setError("Hubo un error al procesar la orden.");
@@ -129,18 +105,40 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Header */}
-      <header className="header">
-        <h1>NightDrop Licorería</h1>
-        <div style={{ color: 'var(--text-muted)' }}>Catálogo Exclusivo</div>
+      {/* Hero Section */}
+      <header className="header animate-fade-in">
+        <div className="hero-badge">
+          <Sparkles size={14} color="var(--primary)" />
+          <span>Premium Delivery 24/7</span>
+        </div>
+        <h1>NightDrop <span style={{ color: 'var(--primary)' }}>Licorería</span></h1>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', maxWidth: '600px', marginTop: '1rem' }}>
+          La selección más exclusiva de licores internacionales, entregados con la velocidad de la noche y la seguridad de Nuvei.
+        </p>
+        
+        <div className="hero-stats" style={{ display: 'flex', gap: '2rem', marginTop: '2rem' }}>
+          <div className="stat-item">
+            <Star size={18} color="#FFD700" fill="#FFD700" />
+            <span><strong>4.9</strong> Rating</span>
+          </div>
+          <div className="stat-item">
+            <ShieldCheck size={18} color="#00ffa2" />
+            <span><strong>Nuvei</strong> Secure</span>
+          </div>
+        </div>
       </header>
 
       {/* Main Content */}
       <main>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '3rem' }}>Cargando catálogo...</div>
+          <div className="glass-card" style={{ textAlign: 'center', padding: '5rem' }}>
+            <div className="loading-spinner"></div>
+            <p style={{ marginTop: '1.5rem', color: 'var(--text-secondary)' }}>Preparando la bodega...</p>
+          </div>
         ) : error ? (
-          <div style={{ color: '#ff4757', padding: '1rem' }}>{error}</div>
+          <div className="glass-card" style={{ color: '#ff4757', padding: '2rem', border: '1px solid #ff475733' }}>
+            {error}
+          </div>
         ) : (
           <div className="products-grid">
             {products.map((p, i) => (
@@ -151,88 +149,83 @@ function App() {
               >
                 <div className="product-image-container">
                   {p.image ? (
-                    <img src={p.image} alt={p.name} style={{ maxHeight: '100%', objectFit: 'contain' }} />
+                    <img src={p.image} alt={p.name} style={{ maxHeight: '80%', maxWidth: '80%', objectFit: 'contain' }} />
                   ) : (
-                    <Wine className="product-placeholder" color="var(--primary-light)" />
+                    <Wine className="product-placeholder" size={60} color="var(--primary-light)" />
                   )}
                 </div>
                 <div className="product-brand">{p.brand}</div>
                 <h3 className="product-name">{p.name}</h3>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>
-                  {p.volume_ml}ml • {p.alcohol_content}% Alc
-                </p>
+                <div style={{ display: 'flex', gap: '0.5rem', margin: '0.5rem 0' }}>
+                   <span className="badge-tag">{p.volume_ml}ml</span>
+                   <span className="badge-tag">{p.alcohol_content}% Alc.</span>
+                </div>
                 <div className="product-price">${parseFloat(p.price).toFixed(2)}</div>
                 
                 <button className="add-btn" onClick={() => addToCart(p)}>
-                  <Plus size={18} /> Agregar
+                  <Plus size={18} /> Añadir al Carrito
                 </button>
               </div>
             ))}
-            
-            {products.length === 0 && (
-              <div style={{ color: 'var(--text-muted)' }}>No hay productos disponibles. Ejecuta el script de prueba para crear algunos.</div>
-            )}
           </div>
         )}
       </main>
 
       {/* Sidebar Cart */}
-      <aside className="cart-sidebar glass-card">
+      <aside className="cart-sidebar glass-card animate-fade-in">
         <div className="cart-header">
-          <ShoppingBag color="var(--primary)" /> Mi Orden
+          <ShoppingBag size={28} color="var(--primary)" /> 
+          <span>Tu Selección</span>
         </div>
 
         {orderResult ? (
           <div className="animate-fade-in" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <div className="success-message">
-              <CheckCircle2 size={32} />
-              <h3>¡Orden Registrada!</h3>
-              <p>Referencia: {orderResult.dev_reference}</p>
+              <CheckCircle2 size={40} color="#00ffa2" />
+              <h3 style={{ margin: '1rem 0', fontSize: '1.5rem' }}>¡Orden Lista!</h3>
+              <p style={{ color: 'var(--text-secondary)' }}>Ref: {orderResult.dev_reference}</p>
               
-              {orderResult.method_used === 'checkout' ? (
-                <div style={{ marginTop: '1rem', color: '#fff' }}>
-                  <p>El modal de pago seguro debería estar abierto.</p>
-                  <p style={{ fontSize: '0.8rem', opacity: 0.8 }}>(Si falló, revisa las credenciales en Django Admin)</p>
-                </div>
-              ) : orderResult.payment_url || (orderResult.nuvei_response?.data?.payment?.payment_url) ? (
-                <>
-                  <a 
-                    href={orderResult.payment_url || orderResult.nuvei_response.data.payment.payment_url} 
-                    target="_blank" 
-                    rel="noreferrer"
-                  >
-                    Ir al Enlace de Pago
-                  </a>
-                  
-                  {orderResult.nuvei_response?.data?.payment?.payment_qr && (
-                    <div style={{ marginTop: '1rem', background: '#fff', padding: '0.5rem', borderRadius: '8px', display: 'inline-block' }}>
-                      <img 
-                        src={`data:image/png;base64,${orderResult.nuvei_response.data.payment.payment_qr}`} 
-                        alt="QR de Pago" 
-                        style={{ width: '150px', height: '150px' }}
-                      />
-                    </div>
-                  )}
-                </>
-              ) : (
-                <p style={{ fontSize: '0.8rem', color: '#ff4757', marginTop: '1rem' }}>
-                  Nota: El link de Nuvei no se generó. (Revisa tus credenciales en el admin de Django).
-                </p>
-              )}
+              <div style={{ margin: '2rem 0' }}>
+                {orderResult.method_used === 'checkout' ? (
+                  <p>Completa el pago en el modal seguro.</p>
+                ) : (
+                  <>
+                    {orderResult.nuvei_response?.data?.payment?.payment_qr && (
+                      <div className="qr-container">
+                        <img 
+                          src={`data:image/png;base64,${orderResult.nuvei_response.data.payment.payment_qr}`} 
+                          alt="QR de Pago" 
+                        />
+                        <p style={{ fontSize: '0.8rem', marginTop: '0.5rem', color: '#000' }}>Escanea para pagar</p>
+                      </div>
+                    )}
+                    <a 
+                      href={orderResult.payment_url || orderResult.nuvei_response?.data?.payment?.payment_url} 
+                      className="checkout-btn"
+                      target="_blank" 
+                      rel="noreferrer"
+                    >
+                      Pagar con Enlace
+                    </a>
+                  </>
+                )}
+              </div>
             </div>
             
             <button 
-              className="checkout-btn" 
+              className="add-btn" 
               style={{ marginTop: 'auto' }}
               onClick={() => setOrderResult(null)}
             >
-              Nueva Orden
+              Hacer otra compra
             </button>
           </div>
         ) : cart.length === 0 ? (
           <div className="empty-cart">
-            <ShoppingBag size={48} opacity={0.2} />
-            <p>Tu carrito está vacío</p>
+            <div className="empty-cart-icon">
+              <ShoppingBag size={64} strokeWidth={1} />
+            </div>
+            <p>Tu carrito espera ser llenado con lo mejor.</p>
           </div>
         ) : (
           <>
@@ -240,7 +233,7 @@ function App() {
               {cart.map(item => (
                 <div key={item.id} className="cart-item">
                   <div className="cart-item-img">
-                    <Wine size={20} color="var(--primary)" />
+                    <Wine size={24} color="var(--primary)" />
                   </div>
                   <div className="cart-item-info">
                     <h4>{item.name}</h4>
@@ -248,7 +241,7 @@ function App() {
                   </div>
                   <div className="qty-controls">
                     <button className="qty-btn" onClick={() => updateQuantity(item.id, -1)}><Minus size={14} /></button>
-                    <span>{item.quantity}</span>
+                    <span style={{ fontWeight: 700 }}>{item.quantity}</span>
                     <button className="qty-btn" onClick={() => updateQuantity(item.id, 1)}><Plus size={14} /></button>
                   </div>
                 </div>
@@ -256,17 +249,18 @@ function App() {
             </div>
 
             <div className="user-form">
+              <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Datos de Entrega</label>
               <input 
                 type="text" 
                 className="input-field" 
-                placeholder="Nombre" 
+                placeholder="Nombre Completo" 
                 value={user.name} 
                 onChange={(e) => setUser({...user, name: e.target.value})}
               />
               <input 
                 type="text" 
                 className="input-field" 
-                placeholder="Teléfono (WhatsApp)" 
+                placeholder="WhatsApp (Ej: 593...)" 
                 value={user.phone} 
                 onChange={(e) => setUser({...user, phone: e.target.value})}
               />
@@ -286,28 +280,18 @@ function App() {
                 <span>${total.toFixed(2)}</span>
               </div>
               
-              <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Método de Pago:</p>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                  <input 
-                    type="radio" 
-                    name="paymentMethod" 
-                    value="linktopay" 
-                    checked={paymentMethod === 'linktopay'} 
-                    onChange={(e) => setPaymentMethod(e.target.value)} 
-                  /> 
-                  Link de Pago (QR)
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                  <input 
-                    type="radio" 
-                    name="paymentMethod" 
-                    value="checkout" 
-                    checked={paymentMethod === 'checkout'} 
-                    onChange={(e) => setPaymentMethod(e.target.value)} 
-                  /> 
-                  Checkout Modal Seguro
-                </label>
+              <div className="payment-selector">
+                <p>Método de Pago Seguro</p>
+                <div className="radio-group">
+                  <label className={`radio-card ${paymentMethod === 'linktopay' ? 'active' : ''}`}>
+                    <input type="radio" value="linktopay" checked={paymentMethod === 'linktopay'} onChange={(e) => setPaymentMethod(e.target.value)} />
+                    <Sparkles size={16} /> Link / QR
+                  </label>
+                  <label className={`radio-card ${paymentMethod === 'checkout' ? 'active' : ''}`}>
+                    <input type="radio" value="checkout" checked={paymentMethod === 'checkout'} onChange={(e) => setPaymentMethod(e.target.value)} />
+                    <CreditCard size={16} /> Tarjeta
+                  </label>
+                </div>
               </div>
 
               <button 
@@ -315,14 +299,110 @@ function App() {
                 onClick={handleCheckout} 
                 disabled={checkingOut}
               >
-                {checkingOut ? 'Procesando...' : (
-                  <><CreditCard size={20} /> Generar Pago</>
+                {checkingOut ? (
+                  <div className="loading-spinner" style={{ width: '20px', height: '20px' }}></div>
+                ) : (
+                  <><CreditCard size={22} /> Confirmar Pedido</>
                 )}
               </button>
             </div>
           </>
         )}
       </aside>
+
+      {/* Adicional CSS para los nuevos componentes de App.jsx */}
+      <style>{`
+        .hero-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: var(--primary-light);
+          padding: 0.5rem 1rem;
+          border-radius: 100px;
+          border: 1px solid var(--primary);
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: var(--primary);
+          margin-bottom: 1.5rem;
+        }
+        .badge-tag {
+          background: rgba(255,255,255,0.05);
+          padding: 0.2rem 0.6rem;
+          border-radius: 6px;
+          font-size: 0.7rem;
+          color: var(--text-secondary);
+          border: 1px solid var(--glass-border);
+        }
+        .stat-item {
+          display: flex;
+          align-items: center;
+          gap: 0.6rem;
+          font-size: 0.9rem;
+          color: var(--text-secondary);
+        }
+        .stat-item strong { color: #fff; }
+        .payment-selector {
+          margin-top: 1.5rem;
+        }
+        .payment-selector p {
+          font-size: 0.85rem;
+          color: var(--text-secondary);
+          margin-bottom: 0.8rem;
+        }
+        .radio-group {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.8rem;
+        }
+        .radio-card {
+          border: 1px solid var(--glass-border);
+          background: rgba(0,0,0,0.2);
+          padding: 0.8rem;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          cursor: pointer;
+          transition: var(--transition);
+          font-size: 0.85rem;
+        }
+        .radio-card.active {
+          border-color: var(--primary);
+          background: var(--primary-light);
+          color: var(--primary);
+        }
+        .radio-card input { display: none; }
+        .qr-container {
+          background: #fff;
+          padding: 1.2rem;
+          border-radius: 20px;
+          display: inline-block;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .qr-container img { width: 180px; height: 180px; }
+        .loading-spinner {
+          width: 40px;
+          height: 40px;
+          border: 3px solid var(--glass-border);
+          border-top-color: var(--primary);
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin: 0 auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .empty-cart-icon {
+          width: 120px;
+          height: 120px;
+          background: var(--bg-surface);
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 1.5rem;
+          color: var(--glass-border);
+        }
+      `}</style>
     </div>
   );
 }
