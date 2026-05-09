@@ -72,12 +72,13 @@ class Command(BaseCommand):
 
         # ── 4. Categorías ────────────────────────────────────────────────────
         categories_data = [
-            {'name': 'Whisky',  'description': 'Whisky escocés, bourbon y blended.'},
-            {'name': 'Ron',     'description': 'Ron blanco, añejo y oscuro.'},
-            {'name': 'Vodka',   'description': 'Vodka premium y de importación.'},
-            {'name': 'Vino',    'description': 'Vinos tintos, blancos y rosados.'},
-            {'name': 'Cerveza', 'description': 'Cervezas nacionales e importadas.'},
-            {'name': 'Gin',     'description': 'Gin artesanal y de importación.'},
+            {'name': 'Whisky',   'description': 'Whisky escocés, bourbon y blended.'},
+            {'name': 'Ron',      'description': 'Ron blanco, añejo y oscuro.'},
+            {'name': 'Vodka',    'description': 'Vodka premium y de importación.'},
+            {'name': 'Vino',     'description': 'Vinos tintos, blancos y rosados.'},
+            {'name': 'Cerveza',  'description': 'Cervezas nacionales e importadas.'},
+            {'name': 'Gin',      'description': 'Gin artesanal y de importación.'},
+            {'name': 'Especial', 'description': 'Edición limitada. Para los que saben.'},
         ]
 
         categories = {}
@@ -142,6 +143,11 @@ class Command(BaseCommand):
             {'category': 'Gin', 'brand': 'Tanqueray', 'name': 'London Dry',
              'description': 'Gin clásico con enebro y notas cítricas.', 'price': '28.00',
              'alcohol_content': '43.10', 'volume_ml': 750, 'stock': 18},
+
+            # ✨ Edición Especial
+            {'category': 'Especial', 'brand': "Kai'Sa", 'name': 'Vayne',
+             'description': '(-20LP)', 'price': '19.00',
+             'alcohol_content': '20.00', 'volume_ml': 500, 'stock': 1},
         ]
 
         created_count = 0
