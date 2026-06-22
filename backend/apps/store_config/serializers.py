@@ -23,8 +23,6 @@ class StoreConfigSerializer(serializers.ModelSerializer):
         # Mask the keys for security
         return {
             'environment': obj.environment,
-            'app_code_client': creds['app_code_client'],
-            'app_key_client': creds['app_key_client'], # Client key is safe to expose
             'app_code_server': creds['app_code_server'],
             'ccapi_url': creds['ccapi_url'],
             'noccapi_url': creds['noccapi_url'],
