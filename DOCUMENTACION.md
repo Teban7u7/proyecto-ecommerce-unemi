@@ -361,4 +361,4 @@ PAYMENT_SERVICE_SECRET=secreto_interno_para_comunicacion_microservicios
 
 ---
 
-*Memoria Técnica generada en el marco de Proyecto de Titulación.*
+*Documento elaborado y estructurado como Memoria Técnica para la sustentación del Proyecto de Titulación.*
