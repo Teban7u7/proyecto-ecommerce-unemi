@@ -87,8 +87,13 @@ function App() {
         const paymentCheckout = new window.PaymentCheckout.modal({
           env_mode: storeConfig.environment.toLowerCase(),
           onResponse: function(res) {
-            if (res.transaction?.status === 'success') {
-              alert("¡Pago Exitoso!");
+            const status = res.transaction?.status || res.status;
+            if (status === 'success' || status === 'approved') {
+              window.location.href = '/success';
+            } else if (status === 'pending') {
+              window.location.href = '/pending';
+            } else {
+              window.location.href = '/failure';
             }
           }
         });
