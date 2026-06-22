@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { ShoppingBag, Plus, Minus, CreditCard, Wine, CheckCircle2, Star, Sparkles, ShieldCheck } from 'lucide-react';
+import { ShoppingBag, Plus, Minus, CreditCard, Wine, CheckCircle2, Star, Sparkles, ShieldCheck, XCircle, Clock } from 'lucide-react';
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -102,6 +102,47 @@ function App() {
       setCheckingOut(false);
     }
   };
+
+  const path = window.location.pathname;
+
+  if (path === '/success') {
+    return (
+      <div className="app-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', textAlign: 'center' }}>
+        <div style={{ padding: '2rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(255, 255, 255, 0.1)', maxWidth: '400px' }}>
+          <CheckCircle2 size={64} color="#10b981" style={{ margin: '0 auto 1rem auto' }} />
+          <h2 style={{ fontSize: '1.8rem', marginBottom: '0.5rem', color: '#fff' }}>¡Pago Exitoso!</h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Tu orden ha sido confirmada y procesada correctamente. Recibirás tus productos muy pronto.</p>
+          <a href="/" className="checkout-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>Volver a la Tienda</a>
+        </div>
+      </div>
+    );
+  }
+
+  if (path === '/failure') {
+    return (
+      <div className="app-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', textAlign: 'center' }}>
+        <div style={{ padding: '2rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(255, 255, 255, 0.1)', maxWidth: '400px' }}>
+          <XCircle size={64} color="#ef4444" style={{ margin: '0 auto 1rem auto' }} />
+          <h2 style={{ fontSize: '1.8rem', marginBottom: '0.5rem', color: '#fff' }}>Pago Rechazado</h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Hubo un problema procesando tu pago. Por favor, intenta nuevamente con otra tarjeta.</p>
+          <a href="/" className="checkout-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>Volver a la Tienda</a>
+        </div>
+      </div>
+    );
+  }
+
+  if (path === '/pending') {
+    return (
+      <div className="app-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', textAlign: 'center' }}>
+        <div style={{ padding: '2rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(255, 255, 255, 0.1)', maxWidth: '400px' }}>
+          <Clock size={64} color="#f59e0b" style={{ margin: '0 auto 1rem auto' }} />
+          <h2 style={{ fontSize: '1.8rem', marginBottom: '0.5rem', color: '#fff' }}>Pago Pendiente</h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Tu pago está siendo verificado. Te notificaremos cuando se haya confirmado.</p>
+          <a href="/" className="checkout-btn" style={{ textDecoration: 'none', display: 'inline-block' }}>Volver a la Tienda</a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="app-container">
