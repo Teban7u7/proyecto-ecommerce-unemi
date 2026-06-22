@@ -68,6 +68,7 @@ class Order(models.Model):
     authorization_code = models.CharField('Código de Autorización', max_length=100, blank=True)
     dev_reference = models.CharField('Dev Reference', max_length=100, unique=True, blank=True)
     ltp_id = models.CharField('Link to Pay ID', max_length=100, blank=True)
+    webhook_raw_data = models.JSONField('Webhook Raw Data', null=True, blank=True)
     environment = models.CharField(
         'Ambiente', max_length=4, choices=Environment.choices, default=Environment.STG
     )

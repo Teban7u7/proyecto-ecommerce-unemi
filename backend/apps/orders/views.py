@@ -18,9 +18,17 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
 
     def get_permissions(self):
-        if self.action in ('list', 'retrieve', 'update', 'partial_update', 'destroy', 'change_status'):
+        if self.action in ('list', 'retrieve', 'update', 'partial_update', 'destroy', 'change_status', 'latest'):
             return [permissions.IsAuthenticated()]
         return [permissions.AllowAny()]  # create and webhook are public
+
+    @action(detail=False, methods=['get'], url_path='latest')
+    def latest(self, request):
+        """Return the most recently created order."""
+        order = Order.objects.prefetch_related('items', 'items__product').first()
+        if order is None:
+            return Response({'detail': 'No hay órdenes registradas.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(OrderSerializer(order).data)
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -161,7 +169,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         data = request.data
         print(f"WEBHOOK RECEIVED: {data}", flush=True)
         
-        # Extracción segura de la data del payload de Nuvei
+        # Obtenemos dev_reference para identificar la orden
         transaction_data = data.get('transaction', {})
         dev_reference = transaction_data.get('dev_reference') or data.get('dev_reference')
         
@@ -171,9 +179,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         try:
             order = Order.objects.get(dev_reference=dev_reference)
             
-            # Extraer status y código de autorización
+            # Guardamos el JSON crudo enviado por Nuvei
+            order.webhook_raw_data = data
+            
+            # Extraer solo el status mínimo para actualizar nuestra BD
             tx_status = transaction_data.get('status') or data.get('status')
-            auth_code = transaction_data.get('authorization_code') or data.get('authorization_code', '')
             
             # Mapear estados de Nuvei a nuestros PaymentStatus
             status_mapping = {
@@ -187,13 +197,10 @@ class OrderViewSet(viewsets.ModelViewSet):
             mapped_status = status_mapping.get(str(tx_status).lower(), Order.PaymentStatus.PENDING)
             order.payment_status = mapped_status
             
-            if auth_code:
-                order.authorization_code = auth_code
-                
             if mapped_status == Order.PaymentStatus.APPROVED:
                 order.status = Order.Status.PAID
                 # TODO: Trigger Email notification here
-                print(f"✅ ¡PAGO APROBADO! Orden {order.dev_reference} (Auth: {auth_code})", flush=True)
+                print(f"✅ ¡PAGO APROBADO! Orden {order.dev_reference}", flush=True)
             else:
                 print(f"❌ PAGO DENEGADO/PENDIENTE: Orden {order.dev_reference} - Estado: {mapped_status}", flush=True)
                 

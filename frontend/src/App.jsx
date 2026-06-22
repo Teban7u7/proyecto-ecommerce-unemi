@@ -149,10 +149,11 @@ function App() {
               >
                 <div className="product-image-container">
                   {p.image ? (
-                    <img src={p.image} alt={p.name} style={{ maxHeight: '80%', maxWidth: '80%', objectFit: 'contain' }} />
-                  ) : (
-                    <Wine className="product-placeholder" size={60} color="var(--primary-light)" />
-                  )}
+                    <img src={p.image} alt={p.name} style={{ maxHeight: '80%', maxWidth: '80%', objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                  ) : null}
+                  <div className="product-placeholder-icon" style={{ display: p.image ? 'none' : 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+                    <Wine size={60} color="var(--primary-light)" />
+                  </div>
                 </div>
                 <div className="product-brand">{p.brand}</div>
                 <h3 className="product-name">{p.name}</h3>
@@ -233,7 +234,11 @@ function App() {
               {cart.map(item => (
                 <div key={item.id} className="cart-item">
                   <div className="cart-item-img">
-                    <Wine size={24} color="var(--primary)" />
+                    {item.image ? (
+                      <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 'var(--radius-sm)' }} />
+                    ) : (
+                      <Wine size={24} color="var(--primary)" />
+                    )}
                   </div>
                   <div className="cart-item-info">
                     <h4>{item.name}</h4>

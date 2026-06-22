@@ -12,6 +12,10 @@ export default defineConfig({
         // En Docker usa el nombre del servicio; en local usa localhost
         target: process.env.VITE_API_URL || 'http://localhost:8000',
         changeOrigin: true,
+      },
+      '/media': {
+        target: process.env.VITE_API_URL || 'http://localhost:8000',
+        changeOrigin: true,
       }
     }
   }
