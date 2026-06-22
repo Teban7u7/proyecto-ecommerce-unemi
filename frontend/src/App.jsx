@@ -58,7 +58,7 @@ function App() {
   };
 
   const subtotal = cart.reduce((acc, item) => acc + (parseFloat(item.price) * item.quantity), 0);
-  const iva = subtotal * 0.15;
+  const iva = Math.floor(subtotal * 0.15 * 100) / 100;
   const total = subtotal + iva;
 
   const handleCheckout = async () => {

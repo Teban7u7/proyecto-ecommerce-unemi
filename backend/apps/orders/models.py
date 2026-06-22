@@ -1,5 +1,5 @@
 import uuid
-from decimal import Decimal
+from decimal import Decimal, ROUND_DOWN
 from django.db import models
 from apps.products.models import Product
 
@@ -92,7 +92,7 @@ class Order(models.Model):
         items_subtotal = sum(item.subtotal for item in self.items.all())
         self.subtotal = items_subtotal
         rate = Decimal(str(self.tax_percentage)) / Decimal('100')
-        self.vat_amount = (self.subtotal * rate).quantize(Decimal('0.01'))
+        self.vat_amount = (self.subtotal * rate).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
         self.total = self.subtotal + self.vat_amount
 
     def __str__(self):
