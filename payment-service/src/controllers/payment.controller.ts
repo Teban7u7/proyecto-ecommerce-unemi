@@ -3,6 +3,7 @@ import { LinkToPayService } from '../services/linktopay.service';
 import { CheckoutService } from '../services/checkout.service';
 import { WhatsAppService } from '../services/whatsapp.service';
 import { NuveiAuthService } from '../services/nuvei-auth.service';
+import axios from 'axios';
 
 export class PaymentController {
   
@@ -74,12 +75,20 @@ export class PaymentController {
       // We must respond with 200 OK so Nuvei knows we received it
       res.status(200).send('OK');
       
-      // TODO: Forward this to Django to update the Order status
-      // axios.post('DJANGO_URL/api/orders/webhook', payload);
+      // Forward this to Django to update the Order status asynchronously
+      if (process.env.DJANGO_API_URL) {
+        axios.post(`${process.env.DJANGO_API_URL}/orders/webhook/`, payload)
+          .then(() => console.log('✅ Webhook forwarded to Django successfully'))
+          .catch(err => console.error('❌ Failed to forward webhook to Django:', err.message));
+      } else {
+        console.warn('DJANGO_API_URL not defined, cannot forward webhook');
+      }
 
     } catch (error: any) {
       console.error('Webhook error:', error);
-      res.status(500).send('Internal Server Error');
+      if (!res.headersSent) {
+        res.status(500).send('Internal Server Error');
+      }
     }
   }
 }
