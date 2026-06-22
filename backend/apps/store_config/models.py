@@ -35,12 +35,6 @@ class StoreConfig(models.Model):
     )
 
     # === NUVEI CREDENTIALS - STAGING ===
-    nuvei_app_code_client_stg = models.CharField(
-        'App Code Client (STG)', max_length=100, default='TEBANSTG-EC-CLIENT'
-    )
-    nuvei_app_key_client_stg = models.CharField(
-        'App Key Client (STG)', max_length=200, blank=True
-    )
     nuvei_app_code_server_stg = models.CharField(
         'App Code Server (STG)', max_length=100, default='TEBANSTG-EC-SERVER'
     )
@@ -49,12 +43,6 @@ class StoreConfig(models.Model):
     )
 
     # === NUVEI CREDENTIALS - PRODUCTION ===
-    nuvei_app_code_client_prod = models.CharField(
-        'App Code Client (PROD)', max_length=100, blank=True
-    )
-    nuvei_app_key_client_prod = models.CharField(
-        'App Key Client (PROD)', max_length=200, blank=True
-    )
     nuvei_app_code_server_prod = models.CharField(
         'App Code Server (PROD)', max_length=100, blank=True
     )
@@ -128,16 +116,12 @@ class StoreConfig(models.Model):
         """Return the active Nuvei credentials based on current environment."""
         if self.environment == self.Environment.PROD:
             return {
-                'app_code_client': self.nuvei_app_code_client_prod,
-                'app_key_client': self.nuvei_app_key_client_prod,
                 'app_code_server': self.nuvei_app_code_server_prod,
                 'app_key_server': self.nuvei_app_key_server_prod,
                 'ccapi_url': 'https://ccapi.paymentez.com',
                 'noccapi_url': 'https://noccapi.paymentez.com',
             }
         return {
-            'app_code_client': self.nuvei_app_code_client_stg,
-            'app_key_client': self.nuvei_app_key_client_stg,
             'app_code_server': self.nuvei_app_code_server_stg,
             'app_key_server': self.nuvei_app_key_server_stg,
             'ccapi_url': 'https://ccapi-stg.paymentez.com',

@@ -17,14 +17,12 @@ class StoreConfigAdmin(admin.ModelAdmin):
         }),
         ('🔑 Credenciales Nuvei — Staging', {
             'fields': (
-                'nuvei_app_code_client_stg', 'nuvei_app_key_client_stg',
                 'nuvei_app_code_server_stg', 'nuvei_app_key_server_stg',
             ),
             'classes': ('collapse',),
         }),
         ('🔑 Credenciales Nuvei — Producción', {
             'fields': (
-                'nuvei_app_code_client_prod', 'nuvei_app_key_client_prod',
                 'nuvei_app_code_server_prod', 'nuvei_app_key_server_prod',
             ),
             'classes': ('collapse',),
