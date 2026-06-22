@@ -6,24 +6,38 @@
 
 ## Tabla de Contenidos
 
-1. [Resumen del Proyecto](#1-resumen-del-proyecto)
-2. [Contexto Académico y Justificación Tecnológica](#2-contexto-académico-y-justificación-tecnológica)
-3. [Arquitectura del Sistema](#3-arquitectura-del-sistema)
-4. [Estructura del Repositorio](#4-estructura-del-repositorio)
-5. [Requisitos del Entorno](#5-requisitos-del-entorno)
-6. [Instalación y Despliegue Local](#6-instalación-y-despliegue-local)
-7. [Módulos del Backend (Django REST Framework)](#7-módulos-del-backend-django-rest-framework)
-8. [Microservicio de Pagos (Node.js)](#8-microservicio-de-pagos-nodejs)
-9. [Aplicación Cliente (React + Vite)](#9-aplicación-cliente-react--vite)
-10. [Panel de Administración](#10-panel-de-administración)
-11. [Especificación de la API REST](#11-especificación-de-la-api-rest)
-12. [Flujo Transaccional de Pagos](#12-flujo-transaccional-de-pagos)
-13. [Orquestación con Docker Compose](#13-orquestación-con-docker-compose)
-14. [Variables de Entorno y Seguridad](#14-variables-de-entorno-y-seguridad)
+1. [Equipo de Proyecto (Autores)](#1-equipo-de-proyecto-autores)
+2. [Resumen del Proyecto](#2-resumen-del-proyecto)
+3. [Contexto Académico y Justificación Tecnológica](#3-contexto-académico-y-justificación-tecnológica)
+4. [Arquitectura del Sistema](#4-arquitectura-del-sistema)
+5. [Estructura del Repositorio](#5-estructura-del-repositorio)
+6. [Requisitos del Entorno](#6-requisitos-del-entorno)
+7. [Instalación y Despliegue Local](#7-instalación-y-despliegue-local)
+8. [Módulos del Backend (Django REST Framework)](#8-módulos-del-backend-django-rest-framework)
+9. [Microservicio de Pagos (Node.js)](#9-microservicio-de-pagos-nodejs)
+10. [Aplicación Cliente (React + Vite)](#10-aplicación-cliente-react--vite)
+11. [Panel de Administración](#11-panel-de-administración)
+12. [Especificación de la API REST](#12-especificación-de-la-api-rest)
+13. [Flujo Transaccional de Pagos](#13-flujo-transaccional-de-pagos)
+14. [Orquestación con Docker Compose](#14-orquestación-con-docker-compose)
+15. [Variables de Entorno y Seguridad](#15-variables-de-entorno-y-seguridad)
 
 ---
 
-## 1. Resumen del Proyecto
+## 1. Equipo de Proyecto (Autores)
+
+Este proyecto de titulación es el resultado del esfuerzo conjunto y la investigación aplicada de los siguientes egresados de la Universidad Estatal de Milagro (UNEMI):
+
+- **Esteban Alava** (`ealavav@unemi.edu.ec`) — *Lead Software Engineer*
+  Encargado del diseño de la arquitectura central, toma de decisiones tecnológicas, estructuración del backend y orquestación general del sistema.
+- **Geancarlo Barros** (`gbarrosa@unemi.edu.ec`) — *Co-Lead Software Engineer*
+  Encargado del diseño e integración de microservicios, desarrollo del flujo transaccional en el frontend y validación de las pasarelas de pago.
+
+Ambos autores colaboraron de manera equitativa y sinérgica en las fases de análisis, diseño, implementación y pruebas, garantizando la viabilidad y robustez de la plataforma.
+
+---
+
+## 2. Resumen del Proyecto
 
 **NightDrop Licorería** es una plataforma de comercio electrónico desarrollada como proyecto de titulación. El sistema permite la gestión integral de un catálogo de productos, procesamiento de carritos de compras y la culminación de transacciones financieras mediante la integración de una pasarela de pagos externa.
 
@@ -37,7 +51,7 @@
 
 ---
 
-## 2. Contexto Académico y Justificación Tecnológica
+## 3. Contexto Académico y Justificación Tecnológica
 
 Este proyecto fue concebido para demostrar competencias en el desarrollo de software moderno, empleando una arquitectura orientada a microservicios.
 
@@ -50,7 +64,7 @@ Es importante destacar que el proyecto no mantiene ninguna afiliación comercial
 
 ---
 
-## 3. Arquitectura del Sistema
+## 4. Arquitectura del Sistema
 
 El sistema implementa una arquitectura distribuida compuesta por tres nodos principales:
 
@@ -96,7 +110,7 @@ El sistema implementa una arquitectura distribuida compuesta por tres nodos prin
 
 ---
 
-## 4. Estructura del Repositorio
+## 5. Estructura del Repositorio
 
 La organización del código fuente refleja la separación de responsabilidades:
 
@@ -128,7 +142,7 @@ proyecto-titulacion/
 
 ---
 
-## 5. Requisitos del Entorno
+## 6. Requisitos del Entorno
 
 Para la ejecución local y evaluación del proyecto, se requiere el siguiente stack tecnológico:
 
@@ -142,16 +156,16 @@ Para la ejecución local y evaluación del proyecto, se requiere el siguiente st
 
 ---
 
-## 6. Instalación y Despliegue Local
+## 7. Instalación y Despliegue Local
 
-### 6.1. Clonación del Repositorio
+### 7.1. Clonación del Repositorio
 
 ```bash
 git clone https://github.com/Teban7u7/proyecto-licoreria-web-nuvei.git
 cd proyecto-licoreria-web-nuvei
 ```
 
-### 6.2. Configuración del Backend (Capa de Negocio)
+### 7.2. Configuración del Backend (Capa de Negocio)
 
 ```bash
 cd backend
@@ -170,7 +184,7 @@ python manage.py migrate
 python manage.py seed
 ```
 
-### 6.3. Configuración del Servicio de Pagos
+### 7.3. Configuración del Servicio de Pagos
 
 ```bash
 cd ../payment-service
@@ -178,14 +192,14 @@ npm install
 cp .env.example .env
 ```
 
-### 6.4. Configuración del Frontend
+### 7.4. Configuración del Frontend
 
 ```bash
 cd ../frontend
 npm install
 ```
 
-### 6.5. Puesta en Marcha
+### 7.5. Puesta en Marcha
 
 Se requiere la ejecución concurrente de los tres servicios. Abra tres terminales independientes:
 
@@ -207,27 +221,27 @@ cd frontend && npm run dev
 
 ---
 
-## 7. Módulos del Backend (Django REST Framework)
+## 8. Módulos del Backend (Django REST Framework)
 
 El backend está estructurado en cuatro aplicaciones principales (`apps/`), garantizando la cohesión y bajo acoplamiento:
 
-### 7.1. Módulo `accounts`
+### 8.1. Módulo `accounts`
 Responsable de la autenticación y autorización.
 - **Modelado**: Implementa un `CustomUser` extendiendo el modelo base de Django, añadiendo atributos como `phone` y `role` (Administrador/Staff).
 - **Seguridad**: Emplea JSON Web Tokens (JWT) para la gestión de sesiones sin estado (stateless).
 
-### 7.2. Módulo `products`
+### 8.2. Módulo `products`
 Gestiona el catálogo expuesto al consumidor.
 - **Modelos**: `Category`, `Product`, y `Stock`.
 - **Reglas de Negocio**: Control de inventario en tiempo real. Los productos están vinculados a categorías y poseen metadatos específicos (volumen, grado alcohólico). La semilla (`seed`) provee 14 productos con marcas genéricas para pruebas.
 
-### 7.3. Módulo `orders`
+### 8.3. Módulo `orders`
 Maneja el ciclo de vida de la transacción.
 - **Modelos**: `Order` (cabecera) y `OrderItem` (detalle).
 - **Lógica Fiscal**: Implementa el cálculo de la base imponible (`subtotal`), cálculo del IVA aplicable (`vat_amount`) según el porcentaje vigente, y la totalización.
 - **Trazabilidad**: Almacena el identificador de transacción (`dev_reference`) y el estado financiero (`payment_status`) actualizado vía webhooks.
 
-### 7.4. Módulo `store_config`
+### 8.4. Módulo `store_config`
 Centraliza los parámetros globales empleando el patrón de diseño Singleton (una única instancia en base de datos).
 - Permite modificar de manera dinámica parámetros como:
   - Nombre del comercio.
@@ -237,7 +251,7 @@ Centraliza los parámetros globales empleando el patrón de diseño Singleton (u
 
 ---
 
-## 8. Microservicio de Pagos (Node.js)
+## 9. Microservicio de Pagos (Node.js)
 
 Se implementó un microservicio intermedio para desacoplar la complejidad criptográfica y la comunicación con APIs externas del backend principal.
 
@@ -250,7 +264,7 @@ Se implementó un microservicio intermedio para desacoplar la complejidad cripto
 
 ---
 
-## 9. Aplicación Cliente (React + Vite)
+## 10. Aplicación Cliente (React + Vite)
 
 El frontend está desarrollado como una Single Page Application (SPA), optimizada mediante el empaquetador Vite.
 
@@ -262,7 +276,7 @@ El frontend está desarrollado como una Single Page Application (SPA), optimizad
 
 ---
 
-## 10. Panel de Administración
+## 11. Panel de Administración
 
 El sistema provee una interfaz administrativa (backoffice) generada dinámicamente mediante Django Admin, accesible en `/admin`.
 
@@ -277,7 +291,7 @@ El sistema provee una interfaz administrativa (backoffice) generada dinámicamen
 
 ---
 
-## 11. Especificación de la API REST
+## 12. Especificación de la API REST
 
 El Backend expone una API RESTful para el consumo del cliente y de servicios internos. (URL Base: `http://localhost:8000/api/`)
 
@@ -292,7 +306,7 @@ El Backend expone una API RESTful para el consumo del cliente y de servicios int
 
 ---
 
-## 12. Flujo Transaccional de Pagos
+## 13. Flujo Transaccional de Pagos
 
 El flujo de pago asíncrono ("Link to Pay") sigue el siguiente ciclo de vida:
 
@@ -309,7 +323,7 @@ El flujo de pago asíncrono ("Link to Pay") sigue el siguiente ciclo de vida:
 
 ---
 
-## 13. Orquestación con Docker Compose
+## 14. Orquestación con Docker Compose
 
 Para asegurar la reproducibilidad del entorno y facilitar despliegues integrales, se provee un archivo `docker-compose.yml`.
 
@@ -325,7 +339,7 @@ Los servicios orquestados son:
 
 ---
 
-## 14. Variables de Entorno y Seguridad
+## 15. Variables de Entorno y Seguridad
 
 El sistema utiliza archivos `.env` para la inyección de configuraciones sensibles, mitigando el riesgo de exposición en repositorios de código.
 
